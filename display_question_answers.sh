@@ -3,10 +3,56 @@
 # Define variables and colors
 answers_file="./answers.txt"
 questions_file="./questions.txt"
+save_file="./progress.txt"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
+
+# Function to save game progress
+save_game() {
+    echo "$((index)),$score" > "$save_file"
+    echo "your current score is: $score."
+    echo "Game progress saved."
+}
+
+# Function to load game progress
+load_game() {
+    if [ -f "$save_file" ]; then
+        read -r index score < "$save_file"
+        echo "Loaded game at question $((index+1)) with score $score."
+    else
+        echo "No saved game available."
+        index=0
+        score=0
+    fi
+}
+
+# Start menu
+echo "Welcome to the Quiz Game!"
+echo "1. Start New Game"
+echo "2. Load Game"
+echo "3. Quit"
+read -p "Select an option: " option
+
+case $option in
+    1) 
+        index=0
+        score=0
+        echo "Starting a new game..."
+        ;;
+    2) 
+        load_game
+        ;;
+    3) 
+        echo "Quitting game."
+        exit 0
+        ;;
+    *) 
+        echo "Invalid option. Exiting."
+        exit 1
+        ;;
+esac
 
 # Check if files exist and have reading permission
 if [ ! -f "$questions_file" ] || [ ! -f "$answers_file" ]; then
@@ -31,8 +77,8 @@ while IFS= read -r line; do
     answers+=("$line")
 done < "$answers_file"
 
-index=0
-score=0
+#index=0
+#score=0
 indexes=($(shuf -i 0-$((${#questions[@]}-1))))
 shuffled_questions=()
 shuffled_answers=()
@@ -77,6 +123,10 @@ for line in "${shuffled_questions[@]}"; do
         echo -e "${RED}Wrong, the correct answer was: $ans.${NC}"
     fi
     index=$(( index+1 ))
-    echo
+    read -p "Do you want to save and exit? (yes/no): " save_exit
+    if [ "$save_exit" = "yes" ]; then
+        save_game
+        exit 0
+    fi
 done
 echo "Your score is: $score"
