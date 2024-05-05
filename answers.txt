@@ -1,0 +1,4 @@
+Rabat;Dakhla,Fes,Casablanca
+Pluto,Jupiter;Saturn,Mars
+1990,1995;1980,2000
+100°C;120°C,1000000°C,50°C
