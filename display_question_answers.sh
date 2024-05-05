@@ -8,6 +8,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
+MAX_TRIES=3
 
 # Function to save game progress
 save_game() {
@@ -36,19 +37,19 @@ echo "3. Quit"
 read -p "Select an option: " option
 
 case $option in
-    1) 
+    1)
         index=0
         score=0
         echo "Starting a new game..."
         ;;
-    2) 
+    2)
         load_game
         ;;
-    3) 
+    3)
         echo "Quitting game."
         exit 0
         ;;
-    *) 
+    *)
         echo "Invalid option. Exiting."
         exit 1
         ;;
@@ -77,8 +78,6 @@ while IFS= read -r line; do
     answers+=("$line")
 done < "$answers_file"
 
-#index=0
-#score=0
 indexes=($(shuf -i 0-$((${#questions[@]}-1))))
 shuffled_questions=()
 shuffled_answers=()
@@ -87,6 +86,7 @@ for i in "${indexes[@]}"; do
     shuffled_answers+=("${answers[$i]}")
 done
 
+tries_left=$MAX_TRIES
 for line in "${shuffled_questions[@]}"; do
     # Print Question
     echo -e "${YELLOW}Question $(( index+1 )): $line${NC}"
@@ -111,17 +111,33 @@ for line in "${shuffled_questions[@]}"; do
         echo "$(( words_index+1 )). $word"
         words_index=$(( words_index+1 ))
     done
-    read -p "Enter Your answer (number of your choice): " choice
+    
+    correct=0
+    while [ $tries_left -gt 0 ]; do
+        read -p "Enter Your answer (number of your choice): " choice
 
-    # Check if choice is the answer
-    if [ "${words[((choice-1))]}" = "$ans" ]; then
-        echo -e "${GREEN}Correct${NC}"
+        # Check if choice is the answer
+        if [ "${words[((choice-1))]}" = "$ans" ]; then
+            echo -e "${GREEN}Correct${NC}"
 
-        # Increment Score
-        score=$(( score + (5)))
-    else
-        echo -e "${RED}Wrong, the correct answer was: $ans.${NC}"
+            # Increment Score
+            score=$(( score + (5)))
+            correct=1
+            break
+        else
+            tries_left=$(( tries_left - 1 ))
+            if [ $tries_left -gt 0 ]; then
+                echo -e "${RED}Wrong answer. You have $tries_left tries left.${NC}"
+            else
+                echo -e "${RED}Wrong answer, here is the correct answer: $ans.${NC}"
+            fi
+        fi
+    done
+
+    if [ $correct -eq 0 ]; then
+        tries_left=$MAX_TRIES
     fi
+
     index=$(( index+1 ))
     read -p "Do you want to save and exit? (yes/no): " save_exit
     if [ "$save_exit" = "yes" ]; then
