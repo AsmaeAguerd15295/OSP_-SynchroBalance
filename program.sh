@@ -22,6 +22,10 @@ load_game() {
         read -r score < "$save_file"
         if [ -n "$score" ]; then
             echo "Loaded game with score $score."
+            if [ "$score" -eq 75 ]; then
+                echo "Congratulations! You have completed the game successfully!"
+                exit 0
+            fi
         else
             echo "Failed to load game properly. Starting a new game instead."
             score=0
@@ -115,16 +119,15 @@ for i in "${indexes[@]}"; do
         fi
 
         # Check if the choice is correct
-        for word in "${words[@]}"; do
-            if [ "$word" = "${words[$((choice-1))]}" ]; then
-                echo -e "${GREEN}Correct${NC}"
-                score=$(( score + 5 ))
-                correct=1
-                break
+        if [ "${words[$((choice-1))]}" = "$ans" ]; then
+            echo -e "${GREEN}Correct${NC}"
+            score=$(( score + 5 ))
+            if [ "$score" -eq 75 ]; then
+                echo "Congratulations! You have completed the game successfully!"
+                save_game
+                exit 0
             fi
-        done
-
-        if [ $correct -eq 1 ]; then
+            correct=1
             break
         else
             tries_left=$(( tries_left - 1 ))
@@ -147,4 +150,12 @@ for i in "${indexes[@]}"; do
         exit 0
     fi
 done
+
+# Check if all questions have been answered
+if [ $index -eq ${#questions[@]} ]; then
+    echo "You have answered all questions!"
+    save_game
+    exit 0
+fi
+
 echo "Your score is: $score"
