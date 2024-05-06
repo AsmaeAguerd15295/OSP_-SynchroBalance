@@ -1,26 +1,45 @@
 This set of code demonstrates inter-process communication using shared memory and semaphores in C. Here's a detailed explanation of how it works:
 
-1. **Shared Memory Creation (`main.c`):**
+1. Shared Memory Creation (`main.c`):
    - The `main.c` file creates a shared memory segment using `shmget` to hold an integer (`balance`).
    - It also creates two semaphores (`sem1` and `sem2`) using `sem_open` to control access to the shared `balance` variable.
 
-2. **Process Execution (`main.c`):**
+2. Process Execution (`main.c`):
    - Based on the command-line argument (`process_order`), `main.c` forks and executes one of the three processes (`process1`, `process2`, `process3`) using `execl`.
 
-3. **Process Behavior (Processes `process1.c`, `process2.c`, `process3.c`):**
+3. Process Behavior (Processes `process1.c`, `process2.c`, `process3.c`):
    - Each process attaches to the shared memory segment using `shmat` to access the `balance` variable.
    - They also open the semaphores using `sem_open` to synchronize access to `balance`.
 
-4. **Semaphore Usage (Processes `process1.c`, `process2.c`, `process3.c`):**
+4. Semaphore Usage (Processes `process1.c`, `process2.c`, `process3.c`):
    - Processes use `sem_wait` to acquire the semaphores before accessing `balance` and `sem_post` to release them after updating `balance`.
    - This ensures that only one process can modify `balance` at a time, preventing race conditions.
 
-5. **Process Interaction (`process1.c`, `process2.c`, `process3.c`):**
+5. Process Interaction (`process1.c`, `process2.c`, `process3.c`):
    - Each process modifies `balance` based on its logic (incrementing, decrementing, etc.) and prints the updated value.
    - After one iteration (as per the modification to run only once), the process detaches from the shared memory segment using `shmdt`.
 
-6. **Cleanup (`main.c`):**
+6.Cleanup (`main.c`):
    - After all child processes finish (detected by the `SIGCHLD` signal handler), `main.c` detaches from the shared memory segment and removes it using `shmctl`.
    - It also unlinks the semaphores using `sem_unlink`.
 
-Overall, this code demonstrates how to use shared memory and semaphores to coordinate multiple processes accessing a shared resource (`balance` variable) in a controlled and synchronized manner, preventing data corruption and race conditions.
+
+
+
+The code uses the `wait` and `signal` functions, but in a different context. 
+
+1. `signal(SIGCHLD, handle_signal);`: This line in `main.c` registers a signal handler `handle_signal` for the `SIGCHLD` signal, which is sent to the parent process when a child process terminates. The signal handler sets a flag (`child_finished`) to indicate that a child process has finished.
+
+2. `while (!child_finished) { wait(NULL); }`: This loop in `main.c` waits for all child processes to finish. It repeatedly calls `wait(NULL)` until the `child_finished` flag is set by the signal handler.
+
+
+
+The semaphores are used to control access between processes in the following way:
+
+- Semaphore 1 (`sem1`) is used to control access between Process 1 (`process1`) and Process 2 (`process2`). Process 1 waits on `sem1` before updating the balance, and Process 2 posts to `sem1` after it finishes updating the balance.
+
+- Semaphore 2 (`sem2`) is used to control access between Process 2 (`process2`) and Process 3 (`process3`). Process 2 waits on `sem2` before updating the balance, and Process 3 posts to `sem2` after it finishes updating the balance.
+
+This arrangement ensures that only one process at a time can update the balance, preventing race conditions and ensuring that the balance is updated correctly.
+
+
