@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Define variables and colors
 answers_file="./answers.txt"
 questions_file="./questions.txt"
@@ -70,7 +68,6 @@ if ! [ -r "$questions_file" ] || ! [ -r "$answers_file" ]; then
 fi
 
 # Load questions and answers into arrays
-# Load questions and answers into arrays
 questions=()
 answers=()
 while IFS= read -r line; do
@@ -88,49 +85,32 @@ for i in "${indexes[@]}"; do
     echo -e "${YELLOW}${questions[i]}${NC}"
     q_ans="${answers[i]}"
 
-    # Clear previous answers before adding new ones
-    unset all_answers
-    declare -a all_answers
-
-    # Split answers into correct and incorrect parts
-    IFS=';' read -r correct_answer all_incorrect <<< "$q_ans"
-    IFS=',' read -r -a all_answers <<< "$all_incorrect"
-    all_answers+=("$correct_answer")  # Append correct answer to the list of options
-
-    # Clear previous shuffle before new shuffle
-    unset shuffled_indexes
-    shuffled_indexes=($(shuf -i 0-$((${#all_answers[@]} - 1))))
-
-    # Clear and declare the associative array anew for each question
-    unset index_to_answer
-    declare -A index_to_answer
-    correct_index=0
-
-    # Assign shuffled answers to a sorted index
-    for j in "${!shuffled_indexes[@]}"; do
-        idx="${shuffled_indexes[j]}"
-        index_to_answer[$((j + 1))]="${all_answers[idx]}"
-        if [[ "${all_answers[idx]}" == "$correct_answer" ]]; then
-            correct_index=$((j + 1))
-        fi
+    # Extract and display answers
+    IFS=';' read -r first_half rest_of_line <<< "$q_ans"
+    IFS=',' read -r rest ans <<< "$first_half"
+if [ -z "$ans" ]; then
+    ans=$rest
+fi
+    # Print answers
+    ans_words=$(echo "$q_ans" | sed 's/;/,/g')
+    IFS=',' read -r -a words <<< "$ans_words"
+    words_index=0
+    for word in "${words[@]}"; do
+        echo "$(( words_index+1 )). $word"
+        words_index=$(( words_index+1 ))
     done
-
-    # Display answers maintaining numerical order
-    for k in $(seq 1 ${#index_to_answer[@]}); do
-        echo "$k. ${index_to_answer[$k]}"
-    done
-    echo "$(( ${#index_to_answer[@]} + 1 )). Skip this question"
-
-
+    echo "$(( words_index+1 )). Skip this question"
+    
     correct=0
-    tries_left=$MAX_TRIES
     while [ $tries_left -gt 0 ]; do
         read -p "Enter Your answer (number of your choice): " choice
 
-        if [ "$choice" -eq "$(( ${#index_to_answer[@]} + 1 ))" ]; then
+        # Check if the choice is to skip the question
+        if [ "$choice" -eq "$((words_index + 1))" ]; then
             echo -e "${YELLOW}Skipping this question.${NC}"
             break  # Exit the loop and move to the next question without penalty
-        elif [ "$choice" -eq "$correct_index" ]; then
+        elif [ "${words[((choice-1))]}" = "$ans" ]; then
+        tries_left=3
             echo -e "${GREEN}Correct${NC}"
             score=$(( score + 5 ))
             correct=1
@@ -140,7 +120,7 @@ for i in "${indexes[@]}"; do
             if [ $tries_left -gt 0 ]; then
                 echo -e "${RED}Wrong answer. You have $tries_left tries left.${NC}"
             else
-                echo -e "${RED}Wrong answer, the correct answer is: $correct_answer.${NC}"
+                echo -e "${RED}Wrong answer, here is the correct answer: $ans.${NC}"
             fi
         fi
     done
@@ -149,7 +129,7 @@ for i in "${indexes[@]}"; do
         tries_left=$MAX_TRIES
     fi
 
-    index=$((i + 1))
+    index=$((i + 1))  # Update index for correct saving
     read -p "Do you want to save and exit? (yes/no): " save_exit
     if [ "$save_exit" = "yes" ]; then
         save_game
