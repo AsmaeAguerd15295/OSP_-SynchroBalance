@@ -9,7 +9,7 @@
 #include <fcntl.h>
 
 #define SEM_PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP)
-#define INITIAL_BALANCE 0
+#define INITIAL_BALANCE 100
 
 volatile sig_atomic_t child_finished = 0;
 
