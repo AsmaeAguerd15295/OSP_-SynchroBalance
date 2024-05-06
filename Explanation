@@ -1,0 +1,26 @@
+This set of code demonstrates inter-process communication using shared memory and semaphores in C. Here's a detailed explanation of how it works:
+
+1. **Shared Memory Creation (`main.c`):**
+   - The `main.c` file creates a shared memory segment using `shmget` to hold an integer (`balance`).
+   - It also creates two semaphores (`sem1` and `sem2`) using `sem_open` to control access to the shared `balance` variable.
+
+2. **Process Execution (`main.c`):**
+   - Based on the command-line argument (`process_order`), `main.c` forks and executes one of the three processes (`process1`, `process2`, `process3`) using `execl`.
+
+3. **Process Behavior (Processes `process1.c`, `process2.c`, `process3.c`):**
+   - Each process attaches to the shared memory segment using `shmat` to access the `balance` variable.
+   - They also open the semaphores using `sem_open` to synchronize access to `balance`.
+
+4. **Semaphore Usage (Processes `process1.c`, `process2.c`, `process3.c`):**
+   - Processes use `sem_wait` to acquire the semaphores before accessing `balance` and `sem_post` to release them after updating `balance`.
+   - This ensures that only one process can modify `balance` at a time, preventing race conditions.
+
+5. **Process Interaction (`process1.c`, `process2.c`, `process3.c`):**
+   - Each process modifies `balance` based on its logic (incrementing, decrementing, etc.) and prints the updated value.
+   - After one iteration (as per the modification to run only once), the process detaches from the shared memory segment using `shmdt`.
+
+6. **Cleanup (`main.c`):**
+   - After all child processes finish (detected by the `SIGCHLD` signal handler), `main.c` detaches from the shared memory segment and removes it using `shmctl`.
+   - It also unlinks the semaphores using `sem_unlink`.
+
+Overall, this code demonstrates how to use shared memory and semaphores to coordinate multiple processes accessing a shared resource (`balance` variable) in a controlled and synchronized manner, preventing data corruption and race conditions.
