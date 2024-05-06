@@ -11,5 +11,5 @@ H2O;H2O2,CO2,CH4
 Vincent_van_Gogh,Leonardo_da_Vinci;Pablo_Picasso,Michelangelo
 Venus,Mars;Mercury,Neptune
 Amazon_River,Nile_River;Yangtze_River,Mississippi_River
-J.R.R._Tolkien,J.K._Rowling;J.K._Rowling,C.S._Lewis,George_R.R._Martin
+J.R.R._Tolkien,J.K._Rowling;C.S._Lewis,George_R.R._Martin
 Ir,Fe;Au,Ag
