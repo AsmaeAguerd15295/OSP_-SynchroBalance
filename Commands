@@ -6,3 +6,17 @@ gcc process3.c -o process3
 
 Each time you want a process to update the balance, run this: 
 ./main 1 OR ./main 2 OR ./main 3
+
+to remove a shared memory that already exist
+ipcrm -m <shmid>
+
+start the program with running
+make
+
+then run
+./initializer
+
+then processes
+./process1
+./process2
+./process3
