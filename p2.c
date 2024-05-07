@@ -26,7 +26,7 @@ int main() {
     wait(&data->semaphore1);
     // Perform necessary operation on the balance
     data->balance += 10; // Example operation
-    printf("P2 after P1, balance: %d\n", data->balance);
+    
     // Signal semaphore S1 to possibly let P1 continue
     signal(&data->semaphore1);
 
@@ -34,7 +34,7 @@ int main() {
     wait(&data->semaphore2);
     // Perform necessary operation on the balance
     data->balance -= 5; // Example operation
-    printf("P2 before P3, balance: %d\n", data->balance);
+    printf("Process 2 modified balance to : %d\n", data->balance);
     // Signal semaphore S2 to allow P3 to proceed
     signal(&data->semaphore2);
 
