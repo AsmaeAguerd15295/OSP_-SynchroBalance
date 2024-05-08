@@ -1,15 +1,17 @@
 Rabat;Dakhla,Fes,Casablanca
 Pluto,Jupiter;Saturn,Mars
-1990,1995;1980,2000
-100°C;120°C,1000000°C,50°C
-Au;Ag,Pt,Cu
-China,Japan;South Korea,Vietnam
+1990,1980,2000,1995;
+120°C,1000000°C,100°C;50°C
+Ag,Au;Pt,Cu
+China,South_Korea,Vietnam,Japan;
 Mount_Kilimanjaro,Mount_Everest;Mount_Fuji,Mount_McKinley
 Harper_Lee;J.K._Rowling,Ernest_Hemingway,F._Scott_Fitzgerald
-Red,Green;Blue,Yellow
+Red,Blue,Green;Yellow
 H2O;H2O2,CO2,CH4
-Vincent_van_Gogh,Leonardo_da_Vinci;Pablo_Picasso,Michelangelo
+Vincent_van_Gogh,Pablo_Picasso,Michelangelo,Leonardo_da_Vinci;
 Venus,Mars;Mercury,Neptune
-Amazon_River,Nile_River;Yangtze_River,Mississippi_River
-J.R.R._Tolkien,J.K._Rowling;C.S._Lewis,George_R.R._Martin
-Ir,Fe;Au,Ag
+Amazon_River,Yangtze_River,Mississippi_River,Nile_River;
+C.S._Lewis,J.R.R._Tolkien,J.K._Rowling;George_R.R._Martin
+Ir,Au,Fe;Ag
+
+
