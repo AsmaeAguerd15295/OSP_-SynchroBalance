@@ -92,12 +92,20 @@ for i in "${indexes[@]}"; do
     echo -e "${YELLOW}${questions[i]}${NC}"
     q_ans="${answers[i]}"
 
-    # Extract and display answers
-    IFS=';' read -r first_half rest_of_line <<< "$q_ans"
-    IFS=',' read -r rest ans <<< "$first_half"
-    if [ -z "$ans" ]; then
-        ans=$rest
-    fi
+# Splitting the input at semicolon to get the first part
+IFS=';' read -r first_part rest_of_line <<< "$q_ans"
+
+# Splitting the first part at comma to get the last part
+IFS=',' read -r -a parts <<< "$first_part"
+last_part="${parts[${#parts[@]}-1]}"  # Get the last part of the array
+
+# Check if the last part of the first part is the same as the first part itself
+if [ "$last_part" == "$first_part" ]; then
+    ans="$first_part"
+else
+    ans="$last_part"
+fi
+
     # Print answers
     ans_words=$(echo "$q_ans" | sed 's/;/,/g')
     IFS=',' read -r -a words <<< "$ans_words"
