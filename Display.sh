@@ -105,12 +105,22 @@ if [ "$last_part" == "$first_part" ]; then
 else
     ans="$last_part"
 fi
+IFS=',' read -r -a parts <<< "$first_part"
+last_part="${parts[${#parts[@]}-1]}"  # Get the last part of the array
+
+# Check if the last part of the first part is the same as the first part itself
+if [ "$last_part" == "$first_part" ]; then
+    ans="$first_part"
+else
+    ans="$last_part"
+fi
 
     # Print answers
     ans_words=$(echo "$q_ans" | sed 's/;/,/g')
     IFS=',' read -r -a words <<< "$ans_words"
+    shuffled_words=($(printf "%s\n" "${words[@]}" | shuf))
     words_index=0
- for word in "${words[@]}"; do
+    for word in "${shuffled_words[@]}"; do
         echo "$(( words_index+1 )). $word"
         words_index=$(( words_index+1 ))
     done
