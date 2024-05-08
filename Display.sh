@@ -137,7 +137,7 @@ fi
         fi
 
         # Check if the choice is correct
-        if [ "${words[$((choice-1))]}" = "$ans" ]; then
+        if [ "${shuffled_words[$((choice-1))]}" = "$ans" ]; then
         tries_left=3
             echo -e "${GREEN}Correct${NC}"
             score=$(( score + 5 ))
