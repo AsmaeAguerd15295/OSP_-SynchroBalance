@@ -1,3 +1,5 @@
+#done by Hajar, Malak, and Asmae
+
 #!/bin/bash
 
 # Define variables and colors
@@ -36,7 +38,6 @@ load_game() {
     fi
     index=0  # Reset index to start from the first question
 }
-
 # Start menu
 echo "Welcome to the Quiz Game!"
 echo "1. Start New Game"
@@ -99,39 +100,26 @@ IFS=';' read -r first_part rest_of_line <<< "$q_ans"
 IFS=',' read -r -a parts <<< "$first_part"
 last_part="${parts[${#parts[@]}-1]}"  # Get the last part of the array
 
-# Check if the last part of the first part is the same as the first part itself
-if [ "$last_part" == "$first_part" ]; then
-    ans="$first_part"
-else
-    ans="$last_part"
-fi
-IFS=',' read -r -a parts <<< "$first_part"
-last_part="${parts[${#parts[@]}-1]}"  # Get the last part of the array
 
-# Check if the last part of the first part is the same as the first part itself
-if [ "$last_part" == "$first_part" ]; then
-    ans="$first_part"
-else
     ans="$last_part"
-fi
+
 
     # Print answers
     ans_words=$(echo "$q_ans" | sed 's/;/,/g')
     IFS=',' read -r -a words <<< "$ans_words"
     shuffled_words=($(printf "%s\n" "${words[@]}" | shuf))
-    words_index=0
+    words_index=1
     for word in "${shuffled_words[@]}"; do
-        echo "$(( words_index+1 )). $word"
+        echo "$(( words_index )). $word"
         words_index=$(( words_index+1 ))
     done
-    echo "$(( words_index+1 )). Skip this question"
+    echo "$(( words_index )). Skip this question"
 
     correct=0
     while [ $tries_left -gt 0 ]; do
         read -p "Enter Your answer (number of your choice): " choice
-
-        # Check if the choice is to skip the question
-        if [ "$choice" -eq "$((words_index + 1))" ]; then
+             # Check if the choice is to skip the question
+        if [ "$choice" -eq "$((words_index))" ]; then
             echo -e "${YELLOW}Skipping this question.${NC}"
             break  # Exit the loop and move to the next question without penalty
         fi
